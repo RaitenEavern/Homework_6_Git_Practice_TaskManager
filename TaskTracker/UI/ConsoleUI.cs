@@ -56,6 +56,7 @@ namespace TaskTracker.UI
                         "Изменить статус задачи",
                         "Удалить задачу",
                         "Статистика",
+                        "Изменить приоритет",
                         "Сохранить и выйти"
                     );
                 }
@@ -82,6 +83,9 @@ namespace TaskTracker.UI
                         ShowStatistics();
                         break;
                     case 6:
+                        SetTaskPriority();
+                        break;
+                    case 7:
                         storage.SaveTasks(taskService.GetAllTasks());
                         running = false;
                         Console.WriteLine("Задачи сохранены. До свидания!");
@@ -99,7 +103,8 @@ namespace TaskTracker.UI
             Console.WriteLine("3. Изменить статус задачи");
             Console.WriteLine("4. Удалить задачу");
             Console.WriteLine("5. Статистика");
-            Console.WriteLine("6. Сохранить и выйти");
+            Console.WriteLine("6. Изменить приоритет");
+            Console.WriteLine("7. Сохранить и выйти");
             Console.Write("Выберите действие: ");
 
             string input = Console.ReadLine();
@@ -264,9 +269,23 @@ namespace TaskTracker.UI
             if (!int.TryParse(input, out id))
             {
                 Console.WriteLine("Неверный ID.");
+                if (useArrowMenu)
+                {
+                    Console.WriteLine("\nНажмите любую клавишу для продолжения...");
+                    Console.ReadKey();
+                }
                 return;
             }
-
+            if (taskService.GetTaskById(id) == null)
+            {
+                Console.WriteLine("Задачи с таким id не существует");
+                if (useArrowMenu)
+                {
+                    Console.WriteLine("\nНажмите любую клавишу для продолжения...");
+                    Console.ReadKey();
+                }
+                return;
+            }
             Console.WriteLine("Приоритет:");
             Console.WriteLine("1. Low");
             Console.WriteLine("2. Medium");
@@ -279,9 +298,9 @@ namespace TaskTracker.UI
             {
                 switch (prChoice)
                 {
-                    case 1: Console.WriteLine("Приоритет установлен: Low"); break;
-                    case 2: Console.WriteLine("Приоритет установлен: Medium"); break;
-                    case 3: Console.WriteLine("Приоритет установлен: High"); break;
+                    case 1: taskService.ChangePriority(id, TaskPriority.Low); Console.WriteLine("Приоритет установлен: Low"); break;
+                    case 2: taskService.ChangePriority(id, TaskPriority.Medium); Console.WriteLine("Приоритет установлен: Medium"); break;
+                    case 3: taskService.ChangePriority(id, TaskPriority.High); Console.WriteLine("Приоритет установлен: High"); break;
                     default: Console.WriteLine("Неверный выбор."); break;
                 }
             }
